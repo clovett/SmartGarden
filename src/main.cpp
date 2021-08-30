@@ -22,8 +22,6 @@ void setup() {
 
   // USB debugging serial port.
   Serial.begin(115200);
-  while (!Serial)
-    ; // wait for serial port to connect.
 
   Serial.println("Welcome to SmartGarden!");
   Serial.println("=======================");
