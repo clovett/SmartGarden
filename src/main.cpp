@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "NativeEthernet.h"
 #include "Ezo_uart.h"
+#include "home.h"
 
 static char SprintfBuffer[100];
 const char *DomainName = "SmartGarden";
@@ -18,7 +19,7 @@ void teensyMAC(uint8_t *mac) {
 
 void setup() {
   // Sensor serial port (pins 0, 1)
-  Serial1.begin(9600, SERIAL_8N1);
+  Serial1.begin(115200, SERIAL_8N1);
 
   // USB debugging serial port.
   Serial.begin(115200);
@@ -44,16 +45,24 @@ void setup() {
   MDNS.addService("_http._tcp", 80);
   server.begin();
 
-  // in order to the EZO circuit more effectively we need to turn off continuous mode and the *ok response
-  EZO_ph.send_cmd_no_resp("c,0");
-  EZO_ph.send_cmd_no_resp("*ok,0");
   EZO_ph.flush_rx_buffer();
-  String& s = EZO_ph.send_cmd("status");
+
+  // in order to the EZO circuit more effectively we need to turn off continuous mode and the *ok response
+  String& result = EZO_ph.send_cmd("c,0");
+  Serial.print("c,0=");
+  Serial.println(result);
+
+  result = EZO_ph.send_cmd("*ok,0");
+  Serial.print("*ok,0=");
+  Serial.println(result);
+
+  result = EZO_ph.send_cmd("status");
   Serial.print("ph Status=");
-  Serial.println(s);
-  s = EZO_ph.send_cmd("i");
+  Serial.println(result);
+
+  result = EZO_ph.send_cmd("i");
   Serial.print("device info=");
-  Serial.println(s);
+  Serial.println(result);
 }
 
 String readToken(const String& msg, int& pos){
@@ -94,10 +103,8 @@ void loop() {// if there are incoming bytes available
         if (c == '\n' && currentLineIsBlank) {
 
           // send a standard http response header
-          Serial.print("Responding to client: ");
+          Serial.print("Request from: ");
           Serial.println(client.remoteIP());
-          // Serial.print("message: ");
-          // Serial.println(httpMessage);
 
           int pos = 0;
           String method = readToken(httpMessage, pos);
@@ -113,24 +120,14 @@ void loop() {// if there are incoming bytes available
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println("Refresh: 5");  // refresh the page automatically every 5 sec
           client.println();
-          client.println("<!DOCTYPE HTML>");
-          client.println("<html>");
-          client.println("<style>");
-          client.println("body { background-color: #1E1E1E; color: #D4D4D4;}");
-          client.println("</style>");
-          client.println("<body>");
-          client.print("command: ");
-          client.println(cmd);
-          client.println("<br />");
 
-          sprintf(SprintfBuffer, "%s\r", cmd);
-          String& response_data = EZO_ph.send_cmd(cmd);
-          // float pH = 0;
-
-          client.println(response_data);
-          client.println("<br />");
+          if (path == "/"){
+            client.println(homePage);
+          } else {
+            String& response_data = EZO_ph.send_cmd(cmd);
+            client.println(response_data);
+          }
 
           // if (isdigit(response_data[0])) {                   //if the first character in the string is a digit
           //   pH = sensorstring.toFloat();                    //convert the string to a floating point number so it can be evaluated by the Arduino
@@ -146,8 +143,6 @@ void loop() {// if there are incoming bytes available
           //client.println(SprintfBuffer);
           //client.println("<br />");
 
-          client.println("</body>");
-          client.println("</html>");
           client.close(); //If "Connection: close" make sure to close after printing and before stop to avoid harsh reset
           break;
         }
@@ -169,7 +164,6 @@ void loop() {// if there are incoming bytes available
     delay(1);
     // close the connection:
     client.stop();
-    Serial.println("client disconnected");
   }
   else
   {

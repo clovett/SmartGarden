@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<style>
+body { background-color: #1E1E1E; color: #D4D4D4;}
+button { min-width:80px; min-height:30px; }
+.big { font-size:48pt; border-style: solid; border-width: 1px; border-color: #D4D4D4; padding: 10px; }
+</style>
+<script>
+function sendCommand(cmd) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/' + cmd, true);
+  xhr.onload = function(e) {
+    if (this.status == 200) {
+      document.getElementById('result').innerHTML = this.responseText;
+    }
+  };
+  xhr.send();
+}
+function read() { sendCommand('r'); }
+function slope() { sendCommand('slope'); }
+function info() { sendCommand('i'); }
+function status() { sendCommand('status'); }
+</script>
+<body>
+<h2>Smart Garden</h2>
+<button onclick='read()'>Read</button> 
+&nbsp;
+<button onclick='slope()'>Slope</button>
+&nbsp;
+<button onclick='info()'>Info</button>
+&nbsp;
+<button onclick='status()'>Status</button>
+<br/><br/><br/>
+<span class='big' id='result'></span>
+</body>
+
+</html>
