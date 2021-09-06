@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' />
+  <script src="/static/js/jquery-3.2.1.slim.min.js" ></script>
+  <script src="/static/js/popper.min.js"></script>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+<style>
+body { background-color: #1E1E1E; color: #D4D4D4;}
+button { min-width:80px; min-height:30px;  -webkit-appearence: button; padding: 5px;}
+.big { font-size:48pt; border-style: solid; border-width: 1px; border-color: #D4D4D4; padding: 10px; }
+</style>
+<script>
+function sendCommand(cmd) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/' + cmd, true);
+  xhr.onload = function(e) {
+    if (this.status == 200) {
+      document.getElementById('result').innerHTML = this.responseText;
+    }
+  };
+  xhr.send();
+}
+function read() { sendCommand('r'); }
+function info() { sendCommand('i'); }
+function status() { sendCommand('status'); }
+</script>
+<body>
+  <div class="container">
+    <h1>Smart Garden</h1>
+    <span>
+    <button onclick='read()'>Read</button>
+    &nbsp;
+    <button onclick='info()'>Info</button>
+    &nbsp;
+    <button onclick='status()'>Status</button>
+    </span>
+    <br/><br/><br/>
+    <span class='big' id='result'>0.000</span>
+  </div>
+
+</body>
+<script>
+  window.addEventListener('load', read);
+</script>
+</html>
