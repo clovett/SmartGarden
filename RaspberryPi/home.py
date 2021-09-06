@@ -1,4 +1,38 @@
+import os
+import serial
+import time
 from flask import Flask, render_template
+
+
+port = None
+# port_name = "/dev/ttyAMA0"
+port_name = os.getenv("SERIAL_PORT")
+if port_name is None:
+    print("Please configure SERIAL_PORT environment variable")
+    sys.exit(1)
+
+
+def readline(port):
+    buffer = []
+    while True:
+        if port.in_waiting > 0:
+            ch = ord(port.read(1))
+            if ch == 13:
+                return bytearray(buffer).decode('utf-8')
+            else:
+                buffer += [ch]
+
+        else:
+            time.sleep(0.01)
+
+
+def sendcommand(command):
+    global port
+    if port is None:
+        port = serial.Serial(port_name, baudrate=115200, timeout=3.0)
+    port.write((command + "\r").encode())
+    return readline(port)
+
 
 app = Flask(__name__)
 
@@ -6,4 +40,19 @@ app = Flask(__name__)
 def home():
     return render_template('home.htm')
 
-app.run(debug = True, host="192.168.1.119")
+@app.route("/r")
+def read():
+    result = sendcommand('r')
+    return result
+
+@app.route("/i")
+def info():
+    result = sendcommand('i')
+    return result
+
+@app.route("/status")
+def status():
+    result = sendcommand('status')
+    return result
+
+app.run(debug=True, host="192.168.1.23")
