@@ -6,16 +6,16 @@ from flask import Flask, render_template
 
 
 port = None
-# port_name = "/dev/ttyAMA0"
-port_name = os.getenv("SERIAL_PORT")
-if port_name is None:
-    print("Please configure SERIAL_PORT environment variable")
-    sys.exit(1)
+port_name = "/dev/ttyAMA0"
+#port_name = os.getenv("SERIAL_PORT")
+#if port_name is None:
+#    print("Please configure SERIAL_PORT environment variable")
+#    sys.exit(1)
 
-web_addr = os.getenv("WEB_ADDRESS")
-if web_addr is None:
-    print("Please configure WEB_ADDRESS environment variable")
-    sys.exit(1)
+#web_addr = os.getenv("WEB_ADDRESS")
+#if web_addr is None:
+#    print("Please configure WEB_ADDRESS environment variable")
+#    sys.exit(1)
 
 
 def readline(port):
@@ -61,5 +61,6 @@ def status():
     result = sendcommand('status')
     return result
 
-app.run(debug=True, host=web_addr)
+if __name__ == '__main__':
+    app.run(debug=True)
 
