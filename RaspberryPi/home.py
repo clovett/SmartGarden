@@ -1,6 +1,7 @@
 import os
 import serial
 import time
+import sys
 from flask import Flask, render_template
 
 
@@ -9,6 +10,11 @@ port = None
 port_name = os.getenv("SERIAL_PORT")
 if port_name is None:
     print("Please configure SERIAL_PORT environment variable")
+    sys.exit(1)
+
+web_addr = os.getenv("WEB_ADDRESS")
+if web_addr is None:
+    print("Please configure WEB_ADDRESS environment variable")
     sys.exit(1)
 
 
@@ -55,4 +61,5 @@ def status():
     result = sendcommand('status')
     return result
 
-app.run(debug=True, host="192.168.1.23")
+app.run(debug=True, host=web_addr)
+
