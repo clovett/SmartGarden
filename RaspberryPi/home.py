@@ -72,23 +72,27 @@ def status():
     return result
 
 
-@app.route("/calmid")
-def calmid():
+@app.route("/mid")
+def mid():
     result = sendcommand('cal,mid,7')
     return result
 
 
-@app.route("/callow")
-def callow():
+@app.route("/low")
+def low():
     result = sendcommand('cal,low,4')
     return result
 
 
-@app.route("/calhigh")
-def calhigh():
+@app.route("/high")
+def high():
     result = sendcommand('cal,high,10')
     return result
 
+@app.route("/hello")
+def hello():
+    result = sendcommand('cal,low,4')
+    return result
 
 if __name__ == '__main__':
     app.run(debug=True)

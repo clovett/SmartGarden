@@ -10,16 +10,13 @@ button { min-width:80px; min-height:30px;  -webkit-appearence: button; padding: 
 .big { font-size:48pt; border-style: solid; border-width: 1px; border-color: #D4D4D4; padding: 10px; }
 </style>
 <script>
-var reading = true
 function sendCommand(cmd) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/' + cmd, true);
   xhr.onload = function(e) {
     if (this.status == 200) {
       document.getElementById('result').innerHTML = this.responseText;
-      if (reading) {
-        timeout = window.setTimeout(read, 1000);
-      }
+      timeout = window.setTimeout(read, 1000);
     }
   };
   xhr.onerror = function () {
@@ -30,28 +27,23 @@ function sendCommand(cmd) {
 }
 var timeout = undefined;
 function read() {
-    reading = true;
     sendCommand('r');
 }
 function pause() {
     if (timeout) window.clearTimeout(timeout);
     timeout = undefined;
-    reading = false;
 }
 function mid() {
     pause();
-    sendCommand('calmid');
-    read();
+    sendCommand('mid');
 }
 function low() {
     pause();
-    sendCommand('callow');
-    read();
+    sendCommand('low');
 }
 function high() {
     pause();
-    sendCommand('calhigh');
-    read();
+    sendCommand('high');
 }
 </script>
 <body>
