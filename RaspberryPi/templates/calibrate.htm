@@ -10,35 +10,65 @@ button { min-width:80px; min-height:30px;  -webkit-appearence: button; padding: 
 .big { font-size:48pt; border-style: solid; border-width: 1px; border-color: #D4D4D4; padding: 10px; }
 </style>
 <script>
+var reading = true
 function sendCommand(cmd) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/' + cmd, true);
   xhr.onload = function(e) {
     if (this.status == 200) {
       document.getElementById('result').innerHTML = this.responseText;
+      if (reading) {
+        timeout = window.setTimeout(read, 1000);
+      }
     }
   };
   xhr.onerror = function () {
     console.log("** An error occurred sending command");
   };
+
   xhr.send();
 }
-function read() { sendCommand('r'); }
-function info() { sendCommand('i'); }
-function status() { sendCommand('status'); }
-function calibrate() { window.location = "/calibrate" }
+var timeout = undefined;
+function read() {
+    reading = true;
+    sendCommand('r');
+}
+function pause() {
+    if (timeout) window.clearTimeout(timeout);
+    timeout = undefined;
+    reading = false;
+}
+function mid() {
+    pause();
+    sendCommand('calmid');
+    read();
+}
+function low() {
+    pause();
+    sendCommand('callow');
+    read();
+}
+function high() {
+    pause();
+    sendCommand('calhigh');
+    read();
+}
 </script>
 <body>
   <div class="container">
-    <h1>Smart Garden</h1>
+    <h1>Smart Garden - Calibration</h1>
+    <p>
+        Rinse probe in clean water, then test in the pH 7 solution for 5 minutes,
+        click 'Calibrate Mid' button, then rinse, test the pH 4 solution for 5 minutes,
+        click 'Calibrate Low' button, then rinse, test the pH 10 solution for 5 minutes,
+        click 'Calibrate Hi'
+    </p>
     <span>
-    <button onclick='read()'>Read</button>
+    Calibrate <button onclick='mid()'>Mid</button>
     &nbsp;
-    <button onclick='info()'>Info</button>
+    <button onclick='low()'>Low</button>
     &nbsp;
-    <button onclick='status()'>Status</button>
-    &nbsp;
-    <button onclick='calibrate()'>Calibrate</button>
+    <button onclick='high()'>High</button>
     </span>
     <br/><br/><br/>
     <span class='big' id='result'>0.000</span>

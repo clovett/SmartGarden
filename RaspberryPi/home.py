@@ -6,14 +6,14 @@ from flask import Flask, render_template
 
 
 port = None
-port_name = "/dev/ttyAMA0"
-#port_name = os.getenv("SERIAL_PORT")
-#if port_name is None:
+port_name = "com3"  # "/dev/ttyAMA0"
+
+# port_name = os.getenv("SERIAL_PORT")
+# if port_name is None:
 #    print("Please configure SERIAL_PORT environment variable")
 #    sys.exit(1)
-
-#web_addr = os.getenv("WEB_ADDRESS")
-#if web_addr is None:
+# web_addr = os.getenv("WEB_ADDRESS")
+# if web_addr is None:
 #    print("Please configure WEB_ADDRESS environment variable")
 #    sys.exit(1)
 
@@ -33,6 +33,7 @@ def readline(port):
 
 
 def sendcommand(command):
+    print(command)
     global port
     if port is None:
         port = serial.Serial(port_name, baudrate=115200, timeout=3.0)
@@ -42,25 +43,52 @@ def sendcommand(command):
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def home():
     return render_template('home.htm')
+
+
+@app.route("/calibrate")
+def calibrate():
+    return render_template('calibrate.htm')
+
 
 @app.route("/r")
 def read():
     result = sendcommand('r')
     return result
 
+
 @app.route("/i")
 def info():
     result = sendcommand('i')
     return result
+
 
 @app.route("/status")
 def status():
     result = sendcommand('status')
     return result
 
+
+@app.route("/calmid")
+def calmid():
+    result = sendcommand('cal,mid,7')
+    return result
+
+
+@app.route("/callow")
+def callow():
+    result = sendcommand('cal,low,4')
+    return result
+
+
+@app.route("/calhigh")
+def calhigh():
+    result = sendcommand('cal,high,10')
+    return result
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
