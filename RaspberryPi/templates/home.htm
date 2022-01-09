@@ -12,6 +12,7 @@ button { min-width:80px; min-height:30px;  -webkit-appearence: button; padding: 
 <script>
 
 var timeout = undefined;
+var paused = false;
 function sendCommand(cmd) {
   if (timeout) window.clearTimeout(timeout)
   var xhr = new XMLHttpRequest();
@@ -19,7 +20,7 @@ function sendCommand(cmd) {
   xhr.onload = function(e) {
     if (this.status == 200) {
       document.getElementById('result').innerHTML = this.responseText;
-      timeout = window.setTimeout(read, 1000);
+      if (!paused) timeout = window.setTimeout(read, 1000);
     }
   };
   xhr.onerror = function () {
@@ -27,10 +28,21 @@ function sendCommand(cmd) {
   };
   xhr.send();
 }
-function read() { sendCommand('r'); }
-function info() { sendCommand('i'); }
-function status() { sendCommand('status'); }
-function calibrate() { window.location = "/calibrate" }
+function read() {
+  paused = false;
+  sendCommand('r');
+}
+function info() {
+  paused = true;
+  sendCommand('i');
+}
+function status() {
+  paused = true;
+  sendCommand('status');
+}
+function calibrate() {
+  window.location = "/calibrate"
+}
 </script>
 <body>
   <div class="container">
