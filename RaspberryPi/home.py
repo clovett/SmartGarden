@@ -6,7 +6,7 @@ from flask import Flask, render_template
 
 
 port = None
-port_name = "com3"  # "/dev/ttyAMA0"
+port_name = "/dev/ttyAMA0"
 
 # port_name = os.getenv("SERIAL_PORT")
 # if port_name is None:
