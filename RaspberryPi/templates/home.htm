@@ -10,12 +10,16 @@ button { min-width:80px; min-height:30px;  -webkit-appearence: button; padding: 
 .big { font-size:48pt; border-style: solid; border-width: 1px; border-color: #D4D4D4; padding: 10px; }
 </style>
 <script>
+
+var timeout = undefined;
 function sendCommand(cmd) {
+  if (timeout) window.clearTimeout(timeout)
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/' + cmd, true);
   xhr.onload = function(e) {
     if (this.status == 200) {
       document.getElementById('result').innerHTML = this.responseText;
+      timeout = window.setTimeout(read, 1000);
     }
   };
   xhr.onerror = function () {

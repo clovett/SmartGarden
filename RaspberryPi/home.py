@@ -17,7 +17,6 @@ port_name = "/dev/ttyAMA0"
 #    print("Please configure WEB_ADDRESS environment variable")
 #    sys.exit(1)
 
-
 def readline(port):
     buffer = []
     while True:
